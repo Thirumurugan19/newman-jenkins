@@ -6,7 +6,7 @@
     "test": "tests"
   },
   "scripts": {
-    "serverless-api-test": "newman run tests/GIVEB-20_9March2018.json -e tests/env_variable_GIVE20.json"
+    "serverless-api-test": "newman run tests/taxProfiles.json -e tests/env.json"
   },
   "author": "Thirumurugan",
   "dependencies": {
