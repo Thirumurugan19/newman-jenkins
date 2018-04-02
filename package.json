@@ -6,7 +6,7 @@
     "test": "tests"
   },
   "scripts": {
-    "serverless-api-test": "newman run tests/taxProfiles.json -e tests/env.json -r cli"
+    "serverless-api-test": "newman run tests/taxProfiles.json -e tests/env.json -r cli,junit --reporter-junit-export newman.xml"
   },
   "author": "Thirumurugan",
   "dependencies": {
