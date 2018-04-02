@@ -6,10 +6,9 @@
     "test": "tests"
   },
   "scripts": {
-    "serverless-api-test": "newman run "tests/GIVEB-20_9March2018.json" -e "tests/env_variable_GIVE20.json""
+    "serverless-api-test": "newman run tests/GIVEB-20_9March2018.json -e tests/env_variable_GIVE20.json"
   },
   "author": "Thirumurugan",
-  "license": "ISC",
   "dependencies": {
     "newman": "^3.9.3"
   }
