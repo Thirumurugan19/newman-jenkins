@@ -6,7 +6,7 @@
     "test": "tests"
   },
   "scripts": {
-    "serverless-api-test": "newman run tests/taxProfiles.json -e tests/env.json"
+    "serverless-api-test": "newman run tests/taxProfiles.json -e tests/env.json -r cli"
   },
   "author": "Thirumurugan",
   "dependencies": {
