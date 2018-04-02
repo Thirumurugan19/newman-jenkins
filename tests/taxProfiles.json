@@ -1,0 +1,395 @@
+{
+	"info": {
+		"name": "GET Tax Receipt Profiles",
+		"_postman_id": "2e66fa91-d688-b6ca-b473-b57b18426d63",
+		"description": "# Contains Tests for Chimp V2 APIs\n\n## Tests are maintained by Chimp QA Team. \n\n_Tests require that you download an environment template_  \n_Tests variables may require additional input_  \n_Reach out to #ask-qa in Slack if you need help_",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User API",
+			"description": "",
+			"item": [
+				{
+					"name": "Test Cases",
+					"description": "",
+					"item": [
+						{
+							"name": "/users/{{user_id}} - User Details by valid ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "b8b0788e-fcc5-4716-9888-c338e91cd6cc",
+										"type": "text/javascript",
+										"exec": [
+											"//Response in json format",
+											"var jsonData = pm.response.json();",
+											"",
+											"//Function to validate keys available in Json Response",
+											"function validateTests(actual, expected){",
+											"    pm.test(\"'\"+expected+\"' key should be available in response\", function () {",
+											"        pm.expect(actual).to.equal(expected);",
+											"    });",
+											"}",
+											"",
+											"//Function to assert Json value with the expected value",
+											"function jsonValueCheck(testCase, jsonKey, expectedValue){",
+											"    pm.test(testCase, function () {",
+											"        pm.expect(jsonKey).to.eql(expectedValue);",
+											"    });",
+											"}",
+											"",
+											"//Status code check",
+											"pm.test(\"Expecting status code to be 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"//Response time test",
+											"/*pm.test(\"Response time is less than 500ms\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);",
+											"});*/",
+											"",
+											"try {",
+											"    pm.test(\"Response should be json\", function () {",
+											"        pm.expect(typeof(jsonData)).to.equal('object');",
+											"    });",
+											"    ",
+											"    var firstKey;",
+											"    for (var i in jsonData){",
+											"        firstKey = i;",
+											"    }",
+											"    pm.test(\"'data' key should be available in response\", function () {",
+											"        pm.expect(firstKey).to.equal('data');",
+											"    });",
+											"    ",
+											"    var dataArray = ['id', 'type', 'links', 'attributes', 'relationships'];",
+											"    for (var i in jsonData.data){",
+											"        validateTests(i, dataArray[dataArray.indexOf(i)]);",
+											"    }",
+											"    ",
+											"    var attributesArray = ['avatar', 'displayName', 'language', 'balance', 'activeRoleId', 'createdAt'];",
+											"    for (var i in jsonData.data.attributes){",
+											"        validateTests(i, attributesArray[attributesArray.indexOf(i)]);",
+											"    }",
+											"    ",
+											"    var userId = pm.variables.get(\"user_id\");",
+											"    //Check if user Id matches the user Id passed",
+											"    jsonValueCheck(\"User Id in response should match the user Id passed\", jsonData.data.id, userId);",
+											"    ",
+											"    //Check value of data.type",
+											"    jsonValueCheck(\"Value of key 'data[type]' should be users\", jsonData.data.type, \"users\");",
+											"    ",
+											"    //Check value of data.attributes.language",
+											"    /*jsonValueCheck(\"Value of key 'data[attributes][language]' should be 'en'\", jsonData.data.attributes.language, \"en\");*/",
+											"    ",
+											"    //Check data type of key data.relationships",
+											"    jsonValueCheck(\"Data type of of key 'data' should be object\", typeof(jsonData.data), \"object\");",
+											"    ",
+											"    //Check data type of key data.attributes.balance",
+											"    /*jsonValueCheck(\"Data type of of key 'data[attributes][balance]' should be number\", typeof(jsonData.data.attributes.balance), \"number\");*/",
+											"    ",
+											"} catch (e){",
+											"    console.log(e);",
+											"}",
+											"",
+											"",
+											""
+										]
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "645cfbbc-d57e-4ca6-a1b2-3135dbf53247",
+										"type": "text/javascript",
+										"exec": [
+											"//Userid here is 999000 (api@chimp.net), this is a seeded user.",
+											"pm.variables.set(\"user_id\", \"999000\");"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/vnd.api+json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/vnd.api+json"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{api_host}}/api/v2/users/{{user_id}}",
+									"host": [
+										"{{api_host}}"
+									],
+									"path": [
+										"api",
+										"v2",
+										"users",
+										"{{user_id}}"
+									]
+								},
+								"description": "Sends a GET request with a Valid User ID (User id used for this test case is a seeded user, user_id - 999000)\nExpects a Status of 200\nExpects the response to be within 500ms\nExpects a JSON Response containing user details\nExpects the below keys in the response\n'data', id', 'type', 'links', 'attributes', 'relationships'\n'attributes'\n  'avatar', 'displayName', 'language', 'balance', 'activeRoleId', 'createdAt'\n'relationships'\n  'administeredGroups', 'administeredCampaigns', 'administeredCompanies', 'administeredBeneficiaries', 'beneficiaryAdminRoles', 'companyAdminRoles', 'donorRole', 'chimpAdminRole', 'activeRole', 'taxReceiptProfiles'"
+							},
+							"response": []
+						},
+						{
+							"name": "/users/{{user_id}}?include=taxReceiptProfiles - with taxReceiptProfiles",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "dbbf46a0-0fd7-4bc1-98e7-1002d51923e1",
+										"type": "text/javascript",
+										"exec": [
+											"//Userid here is 999000 (api@chimp.net), this is a seeded user.",
+											"pm.variables.set(\"user_id\", \"999000\");"
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "13ae03dd-cc0b-424f-a2bf-c763979d6c99",
+										"type": "text/javascript",
+										"exec": [
+											"//Response in json format",
+											"var jsonData = pm.response.json();",
+											"",
+											"//Function to validate keys available in Json Response",
+											"function validateTests(actual, expected){",
+											"    pm.test(\"'\"+expected+\"' key should be available in response\", function () {",
+											"        pm.expect(actual).to.equal(expected);",
+											"    });",
+											"}",
+											"",
+											"//Function to assert Json value with the expected value",
+											"function jsonValueCheck(testCase, jsonKey, expectedValue){",
+											"    pm.test(testCase, function () {",
+											"        pm.expect(jsonKey).to.eql(expectedValue);",
+											"    });",
+											"}",
+											"",
+											"//Status code check",
+											"pm.test(\"Expecting status code to be 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"//Response time test",
+											"/*pm.test(\"Response time shoule be less than 500ms\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);",
+											"});*/",
+											"",
+											"try {",
+											"    pm.test(\"Response should be json\", function () {",
+											"        pm.expect(typeof(jsonData)).to.equal('object');",
+											"    });",
+											"    ",
+											"    //Checking if data and included keys are available in response",
+											"    var keyArray = ['data', 'included'];",
+											"    for (var i in jsonData){",
+											"        validateTests(i, keyArray[keyArray.indexOf(i)]);",
+											"    }",
+											"    ",
+											"    var dataArray = ['id', 'type', 'links', 'attributes', 'relationships'];",
+											"    for (var i in jsonData.data){",
+											"        validateTests(i, dataArray[dataArray.indexOf(i)]);",
+											"    }",
+											"    ",
+											"    var attributesArray = ['avatar', 'displayName', 'language', 'balance', 'activeRoleId', 'createdAt'];",
+											"    for (var i in jsonData.data.attributes){",
+											"        validateTests(i, attributesArray[attributesArray.indexOf(i)]);",
+											"    }",
+											"    ",
+											"    var userId = pm.variables.get(\"user_id\");",
+											"    //Check if user Id matches the user Id passed",
+											"    jsonValueCheck(\"User Id in response should match the user Id passed\", jsonData.data.id, userId);",
+											"    ",
+											"    //Check value of data.type",
+											"    jsonValueCheck(\"Value of key 'data[type]' should be users\", jsonData.data.type, \"users\");",
+											"    ",
+											"    //Check data type of key data.relationships",
+											"    jsonValueCheck(\"Data type of of key 'data' should be object\", typeof(jsonData.data), \"object\");",
+											"    ",
+											"    //Check value of data.attributes.language",
+											"    /*jsonValueCheck(\"Value of key 'data[attributes][language]' should be 'en'\", jsonData.data.attributes.language, \"en\");*/",
+											"    ",
+											"    //Verify that 'jsonData.data.relationships.taxReceiptProfiles' have 'data' key",
+											"    var subKeys = ['links', 'data'];",
+											"    for (var i in jsonData.data.relationships.taxReceiptProfiles){",
+											"        jsonValueCheck(\"The key(s) under 'jsonData.data.relationships.taxReceiptProfiles' should have 'links' and 'data' as keys\", i, subKeys[subKeys.indexOf(i)]);",
+											"    }",
+											"    ",
+											"    jsonValueCheck(\"The number of tax receipt profiles available in the response should be 3\", jsonData.data.relationships.taxReceiptProfiles.data.length, 3);",
+											"    ",
+											"    var taxReceiptProfilesIdArray = [];",
+											"    //Verify that the value of \"taxReceiptProfiles[data][i][type]\" key is \"taxReceiptProfiles\"",
+											"    for (var i in jsonData.data.relationships.taxReceiptProfiles.data){",
+											"        taxReceiptProfilesIdArray.push(jsonData.data.relationships.taxReceiptProfiles.data[i]['id']);",
+											"        jsonValueCheck(\"The value of key 'taxReceiptProfiles[data][\"+i+\"][type]' should be 'taxReceiptProfiles'\", jsonData.data.relationships.taxReceiptProfiles.data[i]['type'], \"taxReceiptProfiles\");",
+											"    }",
+											"    console.log(\"taxReceiptProfiles Ids: \"+taxReceiptProfilesIdArray);",
+											"    ",
+											"    //Number of objects in included array should be 3",
+											"    //3 tax receipt Profiles",
+											"    jsonValueCheck(\"The number of objects in included array under response should be 3\", jsonData.included.length, 3);",
+											"    ",
+											"    //Verify if the below keys are available in the object(s) under 'included' array",
+											"    var objectKeyArray = ['id', 'type', 'links', 'attributes', 'relationships'];",
+											"    var objectAttributesArray = ['fullName', 'addressOne', 'addressTwo', 'city', 'province', 'postalCode', 'country', 'accountNumber'];",
+											"    var objectRelationshipsArray = ['accountHoldable'];",
+											"    for (var i=0; i < jsonData.included.length; i++ ){",
+											"        for (var j in jsonData.included[i]){",
+											"            jsonValueCheck(\"Key '\"+j+\"' retrieved from jsonData.included[\"+i+\"] should be \"+objectKeyArray[objectKeyArray.indexOf(j)], j, objectKeyArray[objectKeyArray.indexOf(j)]);",
+											"        }",
+											"        for (var j in jsonData.included[i]['attributes']){",
+											"            jsonValueCheck(\"Key '\"+j+\"' retrieved from jsonData.included[\"+i+\"]['attributes'] should be \"+objectAttributesArray[objectAttributesArray.indexOf(j)], j, objectAttributesArray[objectAttributesArray.indexOf(j)]);",
+											"        }",
+											"        for (var j in jsonData.included[i]['relationships']){",
+											"            jsonValueCheck(\"Key '\"+j+\"' retrieved from jsonData.included[\"+i+\"]['relationships'] should be \"+objectRelationshipsArray[objectRelationshipsArray.indexOf(j)], j, objectRelationshipsArray[objectRelationshipsArray.indexOf(j)]);",
+											"        }",
+											"    }",
+											"    ",
+											"    //Verify Tax Receipt Profile details [id, type, fullName, Adress & accountNumber]",
+											"    //Verify Tax Receipt profile ids should match the ids retrieved from 'data' key from response",
+											"    //Verify that the type of each object under included array is 'taxReceiptProfiles'",
+											"    var expectedDetails = ['Johnny Canuck', 'Bob Hoskins', 'Bob Hoskins Junior' ];",
+											"    for (var i=0; i < jsonData.included.length; i++ ){",
+											"        jsonValueCheck(\"The tax receipt profiles id's retrieved in response should match the tax receipt profile id's in included array\", jsonData.included[i]['id'], taxReceiptProfilesIdArray[i]);",
+											"        jsonValueCheck(\"The value of key 'jsonData.included[\"+i+\"][type]' should be 'taxReceiptProfiles'\", jsonData.included[i]['type'], \"taxReceiptProfiles\");",
+											"        jsonValueCheck(\"The fullName retrieved from included array in response '\"+jsonData.included[i]['attributes']['fullName']+\"' should match the name  - \"+expectedDetails[i], jsonData.included[i]['attributes']['fullName'], expectedDetails[i]);",
+											"    }",
+											"    ",
+											"    //Check data type of key data.attributes.balance",
+											"    /*jsonValueCheck(\"Data type of of key 'data[attributes][balance]' should be number\", typeof(jsonData.data.attributes.balance), \"number\");*/",
+											"    ",
+											"} catch (e){",
+											"    console.log(e);",
+											"}",
+											"",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/vnd.api+json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/vnd.api+json"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{api_host}}/api/v2/users/{{user_id}}?include=taxReceiptProfiles",
+									"host": [
+										"{{api_host}}"
+									],
+									"path": [
+										"api",
+										"v2",
+										"users",
+										"{{user_id}}"
+									],
+									"query": [
+										{
+											"key": "include",
+											"value": "taxReceiptProfiles",
+											"equals": true
+										}
+									]
+								},
+								"description": "Test for a user where the user has 3 tax receipt profiles\n\nSeeded user id is 999000\nUser - api@chimp.net (Donor role)\nTax Receipt Profiles -\n\n\nTests\n-----\nSends a GET request with valid user Id and include parameter with all administered entities and roles\nExpects the response code to be 200\nExpects the response time within 500ms\nExpects the below keys in the response\n'data', id', 'type', 'links', 'attributes', 'relationships'\n'attributes'\n  'avatar', 'displayName', 'language', 'balance', 'activeRoleId', 'createdAt'\n'relationships'\n  'administeredGroups', 'administeredCampaigns', 'administeredCompanies', 'administeredBeneficiaries', 'beneficiaryAdminRoles', 'companyAdminRoles', 'donorRole', 'chimpAdminRole', 'activeRole', 'taxReceiptProfiles'\n'included'\nExpects the number of taxReceiptProfiles in the response to be 3\nExpects that the 'taxReceiptProfiles' object under 'data' key in response has 'links' and 'data' keys\nExpects that the value of \"taxReceiptProfiles[data][i][type]\" key to be \"taxReceiptProfiles\"\nExpects that the taxReceiptProfile ids retrieved under 'data' key in response should match the tax receipt profile ids in objects available under 'included' array in response\nExpects the number of objects to be 3 in 'included' array in response\nExpects that the value of \"included[i][type]\" key to be \"taxReceiptProfiles\"\nExpects the below keys in \"included[i]\"\n'id', 'type', 'links', 'attributes', 'relationships'\n'attributes'\n    'fullName', 'addressOne', 'addressTwo', 'city', 'province', 'postalCode', 'country', 'accountNumber'\n'relationships'    \n    'accountHoldable'\n\nExpects the below names to be available in objects under 'included' array\n[\"Johnny Canuck\", \"Bob Hoskins\", \"Bob Hoskins Junior\"]\n\nChecks for data type of response, data types of some keys (balance)\nChecks for json value (user id, type, language, relationships types etc)\n\netc"
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "0f5f2140-9bb3-4d22-b53a-d56565677eb3",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "e43cd205-40f2-4e5f-95cc-8af54e901573",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "End to End Tests",
+					"description": "",
+					"item": [],
+					"_postman_isSubFolder": true
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "4bf812f7-3c8a-496d-8e79-d2eb21c008f2",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "109c3a3c-c497-4b75-a630-d8ab32222ef4",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "56088063-0ccc-4274-ac1b-e39d042e68de",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "4abc55dc-7948-4d0f-be96-215cd3d545bd",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
